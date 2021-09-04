@@ -90,17 +90,20 @@ def depthFirstSearch(problem):
     print "Start:", problem.getStartState()
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
-
+    
+    """    
     stack = Stack()
     stack.push(problem.getStartState())
 
     nextState = stack.push()
-    while (!problem.isGoalState(nextState)):
+    while (not problem.isGoalState(nextState)):
         for (successor in proble.getSuccessors(nextState)):
-            stack.push(successor)
+         stack.push(successor)
         nextState = stack.pop()
-    
 
+
+    """
+    util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -131,7 +134,7 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 
-
+"""
 def templateSearch(problem, closedSet, hinge, heuristic):
     if (hinge.empty):
         print "A failer"
@@ -146,6 +149,6 @@ def templateSearch(problem, closedSet, hinge, heuristic):
         for (childAction in problem.getSuccessors(bestAction)):
             hinge.append(childAction)
             templateSearch(problem, closedS, hinge)
-            
+"""            
 
         
