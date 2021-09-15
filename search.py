@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+from util import *
 
 class SearchProblem:
     """
@@ -87,33 +88,89 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
     
-    """    
     stack = Stack()
-    stack.push(problem.getStartState())
+    dic = {}
 
-    nextState = stack.push()
-    while (not problem.isGoalState(nextState)):
-        for (successor in proble.getSuccessors(nextState)):
-         stack.push(successor)
+    for successor in problem.getSuccessors(problem.getStartState()):
+        stack.push(successor)
+        dic[successor] = problem.getStartState()
+    nextState = stack.pop()
+
+    visited = set()
+    visited.add(problem.getStartState())
+    while (not problem.isGoalState(nextState[0]) or not stack.isEmpty):
+        for successor in problem.getSuccessors(nextState[0]):
+            if (successor[0] not in visited):
+                visited.add(successor[0])
+                stack.push(successor)
+                dic[successor] = nextState
         nextState = stack.pop()
 
+    step = nextState
+    return getTotalActions(step, dic)
 
-    """
-    util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    queue = Queue()
+    dic = {}
+    visited = set()
+
+    for successor in problem.getSuccessors(problem.getStartState()):
+        queue.push(successor)
+        dic[successor] = problem.getStartState()
+        visited.add(successor)
+    nextState = queue.pop()
+    
+    visited.add(problem.getStartState())
+    
+    while ((not problem.isGoalState(nextState[0])) or (not queue.isEmpty)):
+        print("in the while loop", nextState);
+        for successor in problem.getSuccessors(nextState[0]):
+            if (successor not in visited):
+                #print("not in", successor, nextState)
+                visited.add(successor)
+                queue.push(successor)
+                #print("after push", queue.list)
+                dic[successor] = nextState
+            #print("in visited", successor)
+        nextState = queue.pop()
+
+    print(problem.isGoalState(nextState[0]))
+    step = nextState
+    return getTotalActions(step, dic)
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    queue = PriorityQueue()
+    dic = {}
+
+    for successor in problem.getSuccessors(problem.getStartState()):
+        dic[successor] = problem.getStartState()
+        queue.push(successor, problem.getCostOfActions(getTotalActions(successor, dic)))
+    nextState = queue.pop()
+
+    visited = set()
+    visited.add(problem.getStartState())
+    while (not problem.isGoalState(nextState[0]) or not queue.isEmpty):
+        for successor in problem.getSuccessors(nextState[0]):
+            if (successor[0] not in visited): 
+                visited.add(successor[0])
+                dic[successor] = nextState
+                cost = problem.getCostOfActions(getTotalActions(successor, dic))
+                queue.push(successor, cost)
+                queue.update(successor, cost)
+        nextState = queue.pop()
+
+    step = nextState
+    return getTotalActions(step, dic)
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -125,6 +182,31 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+    queue = PriorityQueue()
+    dic = {}
+
+    for successor in problem.getSuccessors(problem.getStartState()):
+        dic[successor] = problem.getStartState()
+        queue.push(successor, problem.getCostOfActions(getTotalActions(successor, dic)))
+    nextState = queue.pop()
+
+    visited = set()
+    visited.add(problem.getStartState())
+    while (not problem.isGoalState(nextState[0]) or not queue.isEmpty):
+        for successor in problem.getSuccessors(nextState[0]):
+            if (successor[0] not in visited): 
+                visited.add(successor[0])
+                dic[successor] = nextState
+                cost = problem.getCostOfActions(getTotalActions(successor, dic)) + heuristic(successor[0], problem)
+                queue.push(successor, cost)
+                queue.update(successor, cost)
+        nextState = queue.pop()
+
+    step = nextState
+    return getTotalActions(step, dic)
+    
+    
     util.raiseNotDefined()
 
 
@@ -134,21 +216,11 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 
-"""
-def templateSearch(problem, closedSet, hinge, heuristic):
-    if (hinge.empty):
-        print "A failer"
-        return []
 
-    bestAction = hinge.getBestAction(heuristic)
-    if (problem.isGoalState(bestAction)):
-        return getPath(state)
-    
-    if (bestAction not in closedSet):
-        closedSet.append(bestAction)
-        for (childAction in problem.getSuccessors(bestAction)):
-            hinge.append(childAction)
-            templateSearch(problem, closedS, hinge)
-"""            
-
-        
+def getTotalActions(step, dic):
+    moves = Queue()
+    while (step in dic):
+        moves.push(step[1])
+        step = dic[step]
+        print(step)
+    return moves.list
